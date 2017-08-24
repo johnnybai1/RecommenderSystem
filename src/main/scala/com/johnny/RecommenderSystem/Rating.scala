@@ -1,4 +1,4 @@
-package com.johnny.com.Johnny.RecommenderSystem
+package com.johnny.RecommenderSystem
 
 object Rating {
 

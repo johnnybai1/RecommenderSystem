@@ -1,9 +1,7 @@
-package com.johnny.com.Johnny.RecommenderSystem
+package com.johnny.RecommenderSystem
 
+import org.apache.spark.ml.linalg.{SparseVector, Vector, Vectors}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.ml.linalg.{Vector, Vectors, SparseVector}
-
-import scala.collection.mutable.ListBuffer
 
 
 
