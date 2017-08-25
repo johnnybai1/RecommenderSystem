@@ -10,10 +10,10 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object RecommenderSystem {
 
-  val TRAIN_PATH = "./src/main/data/train.txt";
-  val TEST5_PATH = "./src/main/data/test5.txt";
-  val TEST10_PATH = "./src/main/data/test10.txt";
-  val TEST20_PATH = "./src/main/data/test20.txt";
+  val TRAIN_PATH = "gs://recommendersystemstorage/data/train.txt";
+  val TEST5_PATH = "gs://recommendersystemstorage/data/test5.txt";
+  val TEST10_PATH = "gs://recommendersystemstorage/data/test10.txt";
+  val TEST20_PATH = "gs://recommendersystemstorage/data/test20.txt";
 
   def parseLine(line: String): Vector = {
     val ratings = line
@@ -43,7 +43,6 @@ object RecommenderSystem {
       })
       if (count == 1) {
         (1 - 0.25 * math.abs(math.sqrt(trainSq) - math.sqrt(testSq)), activeRating)
-//        (math.sqrt(math.min(trainSq, testSq) / math.max(trainSq, testSq)), activeRating)
       }
       else if (count > 1) {
         (dot / math.sqrt(trainSq * testSq), activeRating)
@@ -57,7 +56,10 @@ object RecommenderSystem {
 
     val conf = new SparkConf()
       .setAppName("Recommender System")
-      .setMaster("local")
+      .setMaster("spark://10.138.0.2:7077")
+//      .setMaster("local")
+      .set("spark.storage.memoryFraction", "0.5")
+      .set("google.cloud.auth.service.account.json.keyfile", "/home/Johnny/key.json")
     val sc = new SparkContext(conf)
 
     val train = sc
