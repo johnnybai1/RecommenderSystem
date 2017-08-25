@@ -69,7 +69,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>project</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
