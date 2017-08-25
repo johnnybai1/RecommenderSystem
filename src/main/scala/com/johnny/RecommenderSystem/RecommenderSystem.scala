@@ -58,7 +58,6 @@ object RecommenderSystem {
 
     val conf = new SparkConf()
       .setAppName("Recommender System")
-      .setMaster("spark://master:7077")
 
     val sc =
       new SparkContext(conf)
