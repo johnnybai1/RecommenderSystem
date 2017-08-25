@@ -3,17 +3,12 @@ package com.johnny.RecommenderSystem
 import org.apache.spark.ml.linalg.{SparseVector, Vector, Vectors}
 import org.apache.spark.{SparkConf, SparkContext}
 
-
-
 /**
   * Created by Johnny on 8/21/17.
   */
 object RecommenderSystem {
 
-  val TRAIN_PATH = "gs://recommendersystemstorage/data/train.txt";
-  val TEST5_PATH = "gs://recommendersystemstorage/data/test5.txt";
-  val TEST10_PATH = "gs://recommendersystemstorage/data/test10.txt";
-  val TEST20_PATH = "gs://recommendersystemstorage/data/test20.txt";
+  val GS_ROOT = "gs://recommendersystemstorage/data/"
 
   def parseLine(line: String): Vector = {
     val ratings = line
@@ -54,13 +49,19 @@ object RecommenderSystem {
 
   def main(args: Array[String]): Unit = {
 
+    if (args.length < 2) {
+      sys.error("Usage: [training_file.txt] [test_file.txt]")
+      sys.exit(0)
+    }
+    val TRAIN_PATH = GS_ROOT + args(0)
+    val TEST_PATH = GS_ROOT + args(1)
+
     val conf = new SparkConf()
       .setAppName("Recommender System")
-      .setMaster("spark://10.138.0.2:7077")
-//      .setMaster("local")
-      .set("spark.storage.memoryFraction", "0.5")
-      .set("google.cloud.auth.service.account.json.keyfile", "/home/Johnny/key.json")
-    val sc = new SparkContext(conf)
+      .setMaster("spark://master:7077")
+
+    val sc =
+      new SparkContext(conf)
 
     val train = sc
       .textFile(TRAIN_PATH)
@@ -69,7 +70,7 @@ object RecommenderSystem {
       .cache()
 
     val test = sc
-      .textFile(TEST5_PATH)
+      .textFile(TEST_PATH)
       .map { line =>
         line.split(" ") match {
           case Array(uid, mid, rating) =>
@@ -110,10 +111,11 @@ object RecommenderSystem {
           dot += similarity * movieRating
           weightSum += similarity
         } }
-
         (activeUid, activeMid, math.round(dot / weightSum))
       }})
       .foreach(println)
+
+    sc.stop()
 
   }
 }
